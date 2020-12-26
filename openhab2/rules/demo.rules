@@ -1,0 +1,38 @@
+import org.joda.time
+import org.openhab.model.script.actions.Timer
+import java.util.List
+import java.util.ArrayList
+
+var songs = newArrayList('Silent Night','Jingle Bells','O COME ALL YE FAITHFUL','Drummer Boy','O Holy Night')
+
+
+val mqttActions = getActions("mqtt","mqtt:broker:662f5628")
+var Timer t1 = null    
+var Timer t2 = null
+
+rule "Say welcome when human arrives"
+when
+    Item MQTT_Client changed to "FACE_DETECTED"
+then
+    Echo_Living_Room_TTS.sendCommand('<speak><s>Hi there</s><amazon:effect name="excited"><s>Welcome to house number three</s> <s>Wish you a merry christmas!</s></amazon:effect>Here is a  song for you</speak>')
+    t1 = createTimer(now.plusSeconds(8), [|
+        mqttActions.publishMQTT("face","PLAY_SONG",true)	
+	t1 = null
+	])
+end
+
+rule "Play welcome song"
+when
+    Item MQTT_Client changed to "PLAY_SONG"
+then
+    //Echo_Living_Room_MusicProviderId.sendCommand('AMAZON_MUSIC')
+    //Echo_Living_Room_AmazonMusicPlayListId.sendCommand('bc33eca6-d22a-4bbb-b08d-533ecd91fdca')
+    //Echo_Living_Room_Shuffle.sendCommand(ON)
+    var int idx = (Math::random * songs.size()).intValue
+    Echo_Living_Room_PlayMusicCommand.sendCommand(songs.get(idx)) 
+    t2 = createTimer(now.plusSeconds(60), [|
+         mqttActions.publishMQTT("face","READY",true)
+         Echo_Living_Room_AmazonMusicPlayListId.sendCommand('')     
+         t2 = null
+         ])
+end
