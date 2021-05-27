@@ -1,6 +1,7 @@
 # RaspberryPiSetup
 
 1) First we are going to download the Raspbian Lite image from the official raspberry pi website - https://www.raspberrypi.org/software/operating-systems/
+Note : Here I describe installation of Lite OS as it has the lowest size. You can follow upgrading to Desktop version here https://www.raspberrypi.org/forums/viewtopic.php?t=133691
 
 2) Download and install Etcher - To flash the image to your SD card, we will use the program called Etcher, which is available for Mac, Windows and Linux
 
